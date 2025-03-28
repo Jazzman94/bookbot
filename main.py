@@ -24,11 +24,14 @@ def get_book_text(path_to_file: str) -> str:
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 2:
-        print("Usage: python3 main.py <path_to_book>")
+    if len(sys.argv) != 3:
+        print("Usage: python3 main.py [options] <path_to_book>")
+        print(" --words, for word analysis")
+        print(" --characters, for character analysis")
+        print(" --lemmawords, for word lemmatized analysis")
         sys.exit(1)
 
-    path_to_file = sys.argv[1]
+    path_to_file = sys.argv[2]
 
     book_text = get_book_text(path_to_file)
 
@@ -36,6 +39,10 @@ if __name__ == "__main__":
     num_words = count_words(book_text)
     num_count = count_single_words(book_text)
     num_count_sorted = sort_by_value(num_count)
+
+    if sys.argv[1] == "--lemmawords":
+        lemmatized_count_words = lemmatize_count_words(book_text)
+        lemmatized_count_words_sorted = sort_by_value(lemmatized_count_words)
 
     # Character analysis
     total_char_count = count_total_characters(book_text)
@@ -45,19 +52,33 @@ if __name__ == "__main__":
     # Report printing
     print("============ BOOKBOT ============")
     print(f"Analyzing book found at {path_to_file}...")
-    print("----------- Word Count ----------")
-    print(f"Found {num_words} total words")
-    for word, count in num_count_sorted.items():
-        if count < 10:
-            continue
-        print(f"{word}: {count}")
-    print("----------- Total Character Count ----------")
-    print(f"Found {total_char_count} total characters")
-    print("--------- Alphabetical Character Count -------")
-    for char, count in char_count_sorted.items():
-        if not char.isalpha():
-            continue
-        print(f"{char}: {count}")
+
+    if sys.argv[1] == "--words":
+        print("----------- Word Count ----------")
+        print(f"Found {num_words} total words")
+        print("----------- Single Word Counts >= 10 ----------")
+        for word, count in num_count_sorted.items():
+            if count < 10:
+                continue
+            print(f"{word}: {count}")
+
+    if sys.argv[1] == "--lemmawords":
+        print("----------- Lemmatized Single Word Count ----------")
+        for word, count in lemmatized_count_words_sorted.items():
+            if word == ".":
+                continue
+            if count < 10:
+                continue
+            print(f"{word}: {count}")
+
+    if sys.argv[1] == "--characters":
+        print("----------- Total Character Count ----------")
+        print(f"Found {total_char_count} total characters")
+        print("--------- Alphabetical Character Count -------")
+        for char, count in char_count_sorted.items():
+            if not char.isalpha():
+                continue
+            print(f"{char}: {count}")
     print("============= END ===============")
 
 
